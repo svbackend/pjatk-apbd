@@ -11,6 +11,7 @@ namespace APBD2
             var format = args.Length > 2 ? args[2] : "xml";
             
             // todo
+            var students = System.IO.File.ReadAllLines(@inputFilePath);
         }
     }
 }
