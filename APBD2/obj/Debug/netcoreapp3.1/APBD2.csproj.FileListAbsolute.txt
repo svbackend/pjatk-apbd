@@ -1,0 +1,13 @@
+/home/vsaik/PJATK/APBD/code/APBD2/bin/Debug/netcoreapp3.1/APBD2
+/home/vsaik/PJATK/APBD/code/APBD2/bin/Debug/netcoreapp3.1/APBD2.deps.json
+/home/vsaik/PJATK/APBD/code/APBD2/bin/Debug/netcoreapp3.1/APBD2.runtimeconfig.json
+/home/vsaik/PJATK/APBD/code/APBD2/bin/Debug/netcoreapp3.1/APBD2.runtimeconfig.dev.json
+/home/vsaik/PJATK/APBD/code/APBD2/bin/Debug/netcoreapp3.1/APBD2.dll
+/home/vsaik/PJATK/APBD/code/APBD2/bin/Debug/netcoreapp3.1/APBD2.pdb
+/home/vsaik/PJATK/APBD/code/APBD2/obj/Debug/netcoreapp3.1/APBD2.csprojAssemblyReference.cache
+/home/vsaik/PJATK/APBD/code/APBD2/obj/Debug/netcoreapp3.1/APBD2.csproj.CoreCompileInputs.cache
+/home/vsaik/PJATK/APBD/code/APBD2/obj/Debug/netcoreapp3.1/APBD2.AssemblyInfoInputs.cache
+/home/vsaik/PJATK/APBD/code/APBD2/obj/Debug/netcoreapp3.1/APBD2.AssemblyInfo.cs
+/home/vsaik/PJATK/APBD/code/APBD2/obj/Debug/netcoreapp3.1/APBD2.dll
+/home/vsaik/PJATK/APBD/code/APBD2/obj/Debug/netcoreapp3.1/APBD2.pdb
+/home/vsaik/PJATK/APBD/code/APBD2/obj/Debug/netcoreapp3.1/APBD2.genruntimeconfig.cache
