@@ -2,38 +2,61 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using APBD3.DAL;
+using APBD3.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace APBD3.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    [Route("api/students")]
+    public class StudentsController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        private readonly IDbService _dbService;
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public StudentsController(IDbService dbService)
         {
-            _logger = logger;
+            _dbService = dbService;
+        }
+        
+        [HttpGet("{id}")]
+        public IActionResult GetStudent(int id)
+        {
+            if (id == 1)
+            {
+                return Ok("Test1");
+            } else if (id == 2)
+            {
+                return Ok("Test2");
+            }
+            
+            return NotFound("Student not found");
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public IActionResult GetStudents(string orderBy)
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-                {
-                    Date = DateTime.Now.AddDays(index),
-                    TemperatureC = rng.Next(-20, 55),
-                    Summary = Summaries[rng.Next(Summaries.Length)]
-                })
-                .ToArray();
+            return Ok(_dbService.GetStudents());
+        }
+
+        [HttpPost]
+        public IActionResult CreateStudent(Student student)
+        {
+            student.IndexNumber = $"s{new Random().Next(1, 20000)}";
+            return Ok(student);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateStudent(Student student)
+        {
+            return Ok("Update completed");
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteStudent(Student student)
+        {
+            return Ok("Delete completed");
         }
     }
 }
