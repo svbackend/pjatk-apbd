@@ -1,25 +1,48 @@
 using System;
+using System.Text.Json.Serialization;
+using System.Xml.Serialization;
+using APBD2.Converter;
 using APBD2.Exception;
 
-namespace APBD2
+namespace APBD2.Entity
 {
     [Serializable]
     public class Student
     {
+        [XmlElement(ElementName = "fname")]
+        [JsonPropertyName("fname")]
         public string FirstName { get; set; }
+        
+        [XmlElement(ElementName = "lname")]
+        [JsonPropertyName("lname")]
         public string LastName { get; set; }
-        public string StudiesName { get; set; }
-        public string StudiesMode { get; set; }
-        public int StudentId { get; set; }
+
+        [XmlElement(ElementName = "studies")]
+        [JsonPropertyName("studies")]
+        public StudentStudies Studies { get; set; }
+        
+        [XmlAttribute(AttributeName = "indexNumber")]
+        [JsonPropertyName("indexNumber")]
+        public string StudentNumber { get; set; }
+        
+        [XmlElement(ElementName = "birthdate", DataType = "date")]
+        [JsonPropertyName("birthdate")]
+        [JsonConverter(typeof(DateFormatConverter))]
         public DateTime BirthdayDate { get; set; }
+        
+        [XmlElement(ElementName = "email")]
         public string Email { get; set; }
+        
+        [XmlElement(ElementName = "mothersName")]
         public string MothersName { get; set; }
+        
+        [XmlElement(ElementName = "fathersName")]
         public string FathersName { get; set; }
 
         /** Used to detect duplicated records */
         public string UniqueKey()
         {
-            return FirstName + LastName + StudentId.ToString();
+            return FirstName + LastName + StudentNumber.ToString();
         }
 
         public static Student CreateFromCsvRow(string row)
@@ -43,9 +66,8 @@ namespace APBD2
             {
                 FirstName = studentData[0],
                 LastName = studentData[1],
-                StudiesName = studentData[2],
-                StudiesMode = studentData[3],
-                StudentId = int.Parse(studentData[4]),
+                Studies = new StudentStudies {Name = studentData[2], Mode = studentData[3]},
+                StudentNumber = $"s{studentData[4]}",
                 BirthdayDate = DateTime.Parse(studentData[5]),
                 Email = studentData[6],
                 MothersName = studentData[7],
