@@ -1,9 +1,10 @@
 using System.Collections.Specialized;
+using APBD2.Entity;
 
-namespace APBD2
+namespace APBD2.Serializer
 {
-    public interface IStudentSerializer
+    public interface IUniversitySerializer
     {
-        public string Serialize(ListDictionary students);
+        public string Serialize(University university);
     }
 }

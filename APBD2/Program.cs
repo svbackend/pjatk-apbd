@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Text;
-using System.Xml.Serialization;
+using System.Linq;
+using APBD2.Entity;
 using APBD2.Exception;
+using APBD2.Serializer;
 
 namespace APBD2
 {
@@ -15,17 +15,29 @@ namespace APBD2
             var inputFilePath = args.Length > 0 ? args[0] : "../../../data.csv";
             var outputFilePath = args.Length > 1 ? args[1] : "../../../result.xml";
             var format = args.Length > 2 ? args[2] : "xml";
-            var logFilePath = "../../../log.xml";
+            var logFilePath = "../../../log.txt";
 
-            var students = new ListDictionary();
+            var students = new Dictionary<string, Student>();
             var errorLog = "";
-            var inputFileRows = File.ReadAllLines(@inputFilePath);
+
+            string[] inputFileRows;
+
+            try
+            {
+                inputFileRows = File.ReadAllLines(@inputFilePath);
+            }
+            catch (FileNotFoundException e)
+            {
+                File.WriteAllText(logFilePath, e.Message);
+                return;
+            }
+
             foreach (var row in inputFileRows)
             {
                 try
                 {
                     var student = Student.CreateFromCsvRow(row);
-                    if (!students.Contains(student.UniqueKey()))
+                    if (!students.ContainsKey(student.UniqueKey()))
                     {
                         students.Add(student.UniqueKey(), student);
                     }
@@ -40,27 +52,29 @@ namespace APBD2
                 }
             }
 
-            var test = new StudentsListDictionary();
-            test.Students_ = students;
-            using (MemoryStream ms = new MemoryStream())
-            using (System.IO.TextWriter textWriter = new System.IO.StreamWriter(ms))
+            var university = University.CreateFromStudentsList(students.Values.ToList());
+
+            string serializedData;
+            switch (format)
             {
-                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(StudentsListDictionary));
-                serializer.Serialize(textWriter, test);
-                string text = Encoding.UTF8.GetString(ms.ToArray());
-                Console.WriteLine(text);
+                case "xml":
+                    serializedData = new XmlUniversitySerializer().Serialize(university);
+                    break;
+                case "json":
+                    serializedData = new JsonUniversitySerializer().Serialize(university);
+                    break;
+                default: throw new ArgumentException("Unsupported format provided, please use either xml or json");
             }
-            
-            /*
-            XmlSerializer serializer = new XmlSerializer(typeof(ICollection<Student>), new XmlRootAttribute("university"));
-            using(StringWriter textWriter = new StringWriter())
+
+            try
             {
-                serializer.Serialize(textWriter, students.Values);
-                System.Console.WriteLine(textWriter.ToString());
+                File.WriteAllText(outputFilePath, serializedData);
+                File.WriteAllText(logFilePath, errorLog);
             }
-            */
-            
-            Console.WriteLine(errorLog);
+            catch (System.Exception e)
+            {
+                System.Console.WriteLine(errorLog);
+            }
         }
     }
 }

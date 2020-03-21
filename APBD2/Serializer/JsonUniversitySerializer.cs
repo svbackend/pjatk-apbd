@@ -1,12 +1,13 @@
+using System.Text.Json;
 using APBD2.Entity;
 
 namespace APBD2.Serializer
 {
-    public class XmlUniversitySerializer : IUniversitySerializer
+    public class JsonUniversitySerializer : IUniversitySerializer
     {
         public string Serialize(University university)
         {
-            throw new System.NotImplementedException();
+            return JsonSerializer.Serialize(new { university = university });
         }
     }
 }
