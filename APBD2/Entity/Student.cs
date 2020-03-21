@@ -52,5 +52,9 @@ namespace APBD2
                 FathersName = studentData[8]
             };
         }
+
+        private Student()
+        {
+        }
     }
 }
