@@ -7,19 +7,13 @@ namespace APBD3.DAL
 {
     public class DbService : IDbService
     {
-        //private static string connectionString = "jdbc:jtds:sqlserver://server-name/database_name;instance=instance_name";
-        private static string connectionString = @"Server=db-mssql.pjwstk.edu.pl;Initial Catalog=s19319;User=s19319;Password=...;USENTLMV2=true;domain=PJWSTK";
-        // private static string connectionString = "Data Source=db-mssql.pjwstk.edu.pl;Initial Catalog=s19319;Integrated Security=True;Trusted_Connection=true;User=s19319;Password=...";
-        
-        private static List<Student> _students;
-
-        static DbService()
+        private static string connectionString = "Data Source=db-mssql.pjwstk.edu.pl;Initial Catalog=s19319;Integrated Security=True;Trusted_Connection=true;";
+        public IEnumerable<Student> GetStudents()
         {
-            // name, surname, date of birth, name of studies and semester number
-            var sql = "SELECT Student.FirstName, Student.LastName, Student.BirthDate, Studies.Name, E.Semester FROM Student LEFT JOIN Enrollment E on Student.IdEnrollment = E.IdEnrollment LEFT JOIN Studies on E.IdStudy = Studies.IdStudy";
-
-            _students = new List<Student>();
+            var students = new List<Student>();
             
+            var sql = "SELECT FirstName, LastName, BirthDate, Studies.Name StudiesName, Semester, IndexNumber, StartDate FROM Student LEFT JOIN Enrollment E ON Student.IdEnrollment = E.IdEnrollment LEFT JOIN Studies on E.IdStudy = Studies.IdStudy";
+
             using (var conn = new SqlConnection(connectionString))
             using (var cmd = new SqlCommand(sql, conn))
             {
@@ -27,29 +21,57 @@ namespace APBD3.DAL
                 var dr = cmd.ExecuteReader();
                 while (dr.Read())
                 {
-                    _students.Add(new Student
+                    students.Add(new Student
                     {
-                        FirstName = dr["Student.LastName"].ToString(),
-                        LastName = dr["Student.LastName"].ToString(),
-                        BirthDate = DateTime.Parse(dr["Student.BirthDate"].ToString()),
+                        IndexNumber = dr["IndexNumber"].ToString(),
+                        FirstName = dr["FirstName"].ToString(),
+                        LastName = dr["LastName"].ToString(),
+                        BirthDate = DateTime.Parse(dr["BirthDate"].ToString()),
                         Enrollment = new Enrollment
                         {
-                            Semester = int.Parse(dr["E.Semester"].ToString()),
+                            Semester = int.Parse(dr["Semester"].ToString()),
+                            StartDate = DateTime.Parse(dr["StartDate"].ToString()),
                             Study = new Study
                             {
-                                Name = dr["Studies.Name"].ToString()
+                                Name = dr["StudiesName"].ToString()
                             }
                         },
                     });
                 }
-                
-                conn.Close();
             }
+            
+            return students;
         }
-
-        public IEnumerable<Student> GetStudents()
+        
+        public IEnumerable<Enrollment> GetStudentEntries(int indexNumber)
         {
-            return _students;
+            // name, surname, date of birth, name of studies and semester number
+            var sql = "SELECT E.IdEnrollment IdEnrollment, Semester, StartDate, Studies.Name StudiesName FROM Enrollment E RIGHT JOIN Student S on S.IdEnrollment = E.IdEnrollment LEFT JOIN Studies ON E.IdStudy = Studies.IdStudy WHERE S.IndexNumber = @IndexNumber";
+
+            var enrollments = new List<Enrollment>();
+            
+            using (var conn = new SqlConnection(connectionString))
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("IndexNumber", indexNumber);
+                
+                conn.Open();
+                var dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    enrollments.Add(new Enrollment()
+                    {
+                            Semester = int.Parse(dr["Semester"].ToString()),
+                            StartDate = DateTime.Parse(dr["StartDate"].ToString()),
+                            Study = new Study
+                            {
+                                Name = dr["StudiesName"].ToString()
+                            }
+                        });
+                }
+            }
+            
+            return enrollments;
         }
     }
 }
