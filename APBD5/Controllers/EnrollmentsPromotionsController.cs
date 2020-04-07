@@ -9,22 +9,22 @@ using Microsoft.AspNetCore.Mvc;
 namespace APBD3.Controllers
 {
     [ApiController]
-    [Route("api/enrollments")]
-    public class EnrollmentsController : ControllerBase
+    [Route("api/enrollments/promotions")]
+    public class EnrollmentsPromotionsController : ControllerBase
     {
         private readonly IDbService _dbService;
 
-        public EnrollmentsController(IDbService dbService)
+        public EnrollmentsPromotionsController(IDbService dbService)
         {
             _dbService = dbService;
         }
 
         [HttpPost]
-        public IActionResult CreateEnrollment(CreateEnrollmentDto createEnrollmentDto)
+        public IActionResult CreatePromotion(CreatePromotionDto createPromotionDto)
         {
             try
             {
-                Enrollment enrollment = _dbService.EnrollStudent(createEnrollmentDto);
+                Enrollment enrollment = _dbService.EnrollStudent(createPromotionDto);
                 return Created($"/api/enrollments/{enrollment.IdEnrollment}", enrollment);
             }
             catch (StudiesNotFoundException e)

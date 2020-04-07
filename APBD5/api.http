@@ -1,0 +1,18 @@
+﻿GET https://localhost:5001/api/students
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+POST https://localhost:5001/api/enrollments
+Content-Type: application/json
+
+{
+  "IndexNumber": "s19321",
+  "FirstName": "Jogn",
+  "LastName": "Doe",
+  "BirthDate": "1993-03-30",
+  "Studies": "Computer Science"
+}
+
+###
