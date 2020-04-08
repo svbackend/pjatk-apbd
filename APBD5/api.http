@@ -16,3 +16,13 @@ Content-Type: application/json
 }
 
 ###
+
+POST https://localhost:5001/api/enrollments/promotions
+Content-Type: application/json
+
+{
+  "Studies": "Hello",
+  "Semester": 2
+}
+
+###

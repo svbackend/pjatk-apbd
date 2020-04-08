@@ -199,15 +199,19 @@ namespace APBD3.DAL
                 conn.Open();
                 cmd.Connection = conn;
 
-                cmd.CommandText =
-                    "SELECT E.IdEnrollment FROM Enrollment E RIGHT JOIN Studies S ON (S.IdStudy = E.IdStudy AND S.Name = @Name) WHERE Semester = @Semester";
+                cmd.CommandText = @"SELECT E.IdEnrollment FROM Enrollment E 
+                    RIGHT JOIN Studies S ON (S.IdStudy = E.IdStudy AND S.Name = @Name) 
+                    WHERE Semester = @Semester";
+                cmd.Parameters.AddWithValue("Name", dto.Studies);
+                cmd.Parameters.AddWithValue("Semester", dto.Semester);
                 var dr = cmd.ExecuteReader();
 
                 if (!dr.Read())
                 {
-                    // todo create enrollment + study?
+                    throw new EnrollmentNotFoundException();
                 }
                 
+                return new Enrollment();
                 // todo run procedure
             }
         }

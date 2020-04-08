@@ -24,16 +24,12 @@ namespace APBD3.Controllers
         {
             try
             {
-                Enrollment enrollment = _dbService.EnrollStudent(createPromotionDto);
+                Enrollment enrollment = _dbService.Promote(createPromotionDto);
                 return Created($"/api/enrollments/{enrollment.IdEnrollment}", enrollment);
             }
-            catch (StudiesNotFoundException e)
+            catch (EnrollmentNotFoundException e)
             {
-                return BadRequest(new BadRequestDto("Provided studies not found!"));
-            }
-            catch (StudentAlreadyExistsException e)
-            {
-                return BadRequest(new BadRequestDto("Student with such Index Number already exist!"));
+                return NotFound();
             }
         }
     }
