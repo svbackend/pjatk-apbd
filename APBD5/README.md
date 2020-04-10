@@ -1,5 +1,8 @@
-﻿### Procedure:
+﻿If you're using Rider by JetBrains - for testing purposes there's `api.http` file with all requests that were used to test it.
 
+### Procedure:
+
+#### Requirements:
 Add a new stored procedure to your database. The procedure should expect parameters
 for Studies and Semester. Our endpoint will execute the procedure to update all
 Students assigned to a given Semester and Studies. Firstly, we must find a proper
@@ -7,8 +10,10 @@ record in Enrollment table (given Studies and Semester increased by 1). If such 
 doesn’t exists we must add a new one. To complete the process update IdEnrollment
 value for all promoted students.
 
+#### Code:
+
 ```
-CREATE PROCEDURE promoteStudentsByStudyAndSemester @Studies nvarchar(30), @Semester int
+CREATE PROCEDURE promoteStudentsByStudiesAndSemester @Studies nvarchar(30), @Semester int
 AS
     --- DECLARE @Studies NVARCHAR(30) = 'Computer Science'; ---
     --- DECLARE @Semester INT = 4; -- 

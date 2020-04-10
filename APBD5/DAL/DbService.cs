@@ -113,11 +113,12 @@ namespace APBD3.DAL
             cmd.ExecuteNonQuery();
         }
 
-        private Enrollment FindEnrollmentByIdStudy(SqlCommand cmd, int idStudy)
+        private Enrollment FindEnrollmentByIdStudy(SqlCommand cmd, int idStudy, int semester)
         {
-            cmd.CommandText = @"SELECT IdEnrollment, Semester, StartDate FROM Enrollment WHERE Semester = 1 AND IdStudy = @IdStudy";
+            cmd.CommandText = @"SELECT IdEnrollment, Semester, StartDate FROM Enrollment WHERE Semester = @Semester AND IdStudy = @IdStudy";
 
             cmd.Parameters.AddWithValue("IdStudy", idStudy);
+            cmd.Parameters.AddWithValue("Semester", semester);
             var dr = cmd.ExecuteReader();
 
             if (!dr.Read())
@@ -131,6 +132,38 @@ namespace APBD3.DAL
                 Semester = (int) dr["Semester"],
                 StartDate = DateTime.Parse(dr["StartDate"].ToString()),
                 Study = new Study {IdStudy = idStudy},
+            };
+            dr.Close();
+            return enrollment;
+        }
+
+        private Enrollment FindEnrollmentBySemesterAndStudies(SqlCommand cmd, int semester, string studies)
+        {
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = @"SELECT IdEnrollment, Semester, StartDate, S.IdStudy IdStudy FROM Enrollment E 
+                    RIGHT JOIN Studies S ON (S.IdStudy = E.IdStudy AND S.Name = @Name) 
+                    WHERE Semester = @Semester";
+
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("Name", studies);
+            cmd.Parameters.AddWithValue("Semester", semester);
+            var dr = cmd.ExecuteReader();
+
+            if (!dr.Read())
+            {
+                throw new EnrollmentNotFoundException();
+            }
+
+            var enrollment = new Enrollment
+            {
+                IdEnrollment = (int) dr["IdEnrollment"],
+                Semester = (int) dr["Semester"],
+                StartDate = DateTime.Parse(dr["StartDate"].ToString()),
+                Study = new Study
+                {
+                    IdStudy = (int) dr["IdStudy"],
+                    Name = studies
+                },
             };
             dr.Close();
             return enrollment;
@@ -152,12 +185,12 @@ namespace APBD3.DAL
                 Enrollment enrollment;
                 try
                 {
-                    enrollment = FindEnrollmentByIdStudy(cmd, studyId);
+                    enrollment = FindEnrollmentByIdStudy(cmd, studyId, 1);
                 }
                 catch (EnrollmentNotFoundException e)
                 {
                     CreateEnrollment(cmd, studyId);
-                    enrollment = FindEnrollmentByIdStudy(cmd, studyId);
+                    enrollment = FindEnrollmentByIdStudy(cmd, studyId, 1);
                 }
 
                 cmd.CommandText = @"INSERT INTO Student (IndexNumber, FirstName, LastName, BirthDate, IdEnrollment) 
@@ -198,21 +231,17 @@ namespace APBD3.DAL
             {
                 conn.Open();
                 cmd.Connection = conn;
-
-                cmd.CommandText = @"SELECT E.IdEnrollment FROM Enrollment E 
-                    RIGHT JOIN Studies S ON (S.IdStudy = E.IdStudy AND S.Name = @Name) 
-                    WHERE Semester = @Semester";
-                cmd.Parameters.AddWithValue("Name", dto.Studies);
-                cmd.Parameters.AddWithValue("Semester", dto.Semester);
-                var dr = cmd.ExecuteReader();
-
-                if (!dr.Read())
-                {
-                    throw new EnrollmentNotFoundException();
-                }
                 
-                return new Enrollment();
-                // todo run procedure
+                FindEnrollmentBySemesterAndStudies(cmd, dto.Semester, dto.Studies);
+                
+                cmd.CommandText = @"promoteStudentsByStudiesAndSemester";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@Studies", dto.Studies);
+                cmd.Parameters.AddWithValue("@Semester", dto.Semester);
+                cmd.ExecuteNonQuery();
+
+                return FindEnrollmentBySemesterAndStudies(cmd, 1 + dto.Semester, dto.Studies);
             }
         }
 
