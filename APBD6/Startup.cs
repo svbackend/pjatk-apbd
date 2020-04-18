@@ -1,18 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using APBD3.DAL;
 using APBD3.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace APBD3
 {
@@ -29,6 +22,7 @@ namespace APBD3
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IDbService, DbService>();
+            services.AddTransient<ILoggingMiddleware, FileLoggingMiddleware>();
             services.AddControllers();
         }
 
@@ -40,9 +34,9 @@ namespace APBD3
                 app.UseDeveloperExceptionPage();
             }
             
-            app.UseMiddleware<LoggingMiddleware>();
+            app.UseMiddleware<ILoggingMiddleware>();
             
-            app.UseMiddleware(async (context, next) =>
+            app.Use(async (context, next) =>
             {
                 if (!context.Request.Headers.ContainsKey("Index"))
                 {

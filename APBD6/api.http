@@ -36,3 +36,23 @@ Content-Type: application/json
 }
 
 ###
+
+GET https://localhost:5001/api/students
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET https://localhost:5001/api/students?withQueryString=1
+Accept: */*
+Cache-Control: no-cache
+Index: s9999
+
+###
+
+GET https://localhost:5001/api/students?withQueryString=1
+Accept: */*
+Cache-Control: no-cache
+Index: s19319
+
+###
