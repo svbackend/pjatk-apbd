@@ -39,7 +39,7 @@ namespace APBD3.Controllers
                 _dbService.DeleteProject(id);
                 return Ok();
             }
-            catch (TeamMemberNotFound e)
+            catch (ProjectNotFound e)
             {
                 return NotFound();
             }
