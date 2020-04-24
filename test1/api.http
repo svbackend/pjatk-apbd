@@ -1,0 +1,11 @@
+﻿GET https://localhost:5001/api/tasks/1
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+DELETE https://localhost:5001/api/tasks/1
+Accept: */*
+Cache-Control: no-cache
+
+###

@@ -1,0 +1,11 @@
+POST /api/enrollments/promotions{
+  "Studies": "Computer Science",
+  "Semester": 2
+}
+
+POST /api/enrollments/promotions{
+  "Studies": "Hello",
+  "Semester": 2
+}
+
+GET /api/students?withQueryString=1
